@@ -2,6 +2,24 @@
 
 {% block title %}Last train!{% endblock %}
 
+{% block stylesheets %}
+<style>
+  .with-bg-color {
+    display: inline-block;
+    border: none;
+    border-radius: 3em;
+    text-align: center;
+    line-height: 1.2em;
+    min-width: 1em;
+    padding: 0.2em 0.3em;
+  }
+
+  img.picto {
+    vertical-align: middle;
+    height: 1.6em;
+  }
+</style>
+{% endblock %}
 {% block body %}
 
 <div class="card my-5">
@@ -12,19 +30,39 @@
           <tr>
             <th scope="col">Transport</th>
             <th scope="col">Ligne</th>
-            <th scope="col">Prochain passage</th>
             <th scope="col">Direction</th>
+            <th scope="col">Prochain passage</th>
           </tr>
         </thead>
         <tbody>
           {% for departure in stop_area.departures %}
+          {% set maDate = departure.stop_date_time.departure_date_time|date('Ymd\THis') %}
           <tr>
             <td>{{ departure.route.physical_modes.0.name }}</td>
-            <td>{{ departure.route.line.code }}</td>
-            {% set maDate = departure.stop_date_time.departure_date_time|date('Ymd\THis') %}
-            
-            <td>{{ maDate|date('H:i') }}</td>
+            <td>
+              {% if departure.route.line.commercial_mode.id == 'commercial_mode:Bus' %}
+              <span><img class="picto" src="{{ asset('images/bus.svg') }}" alt="Bus" title="Bus"></span>
+              {% elseif departure.route.line.commercial_mode.id == 'commercial_mode:Metro' %}
+              <span><img class="picto" src="{{ asset('images/metro.svg') }}" alt="Metro" title="Metro"></span>
+              {% elseif departure.route.line.commercial_mode.id == 'commercial_mode:Tramway' %}
+              <span><img class="picto" src="{{ asset('images/tramway.svg') }}" alt="Tramway" title="Tramway"></span>
+              {% elseif departure.route.line.commercial_mode.id == 'commercial_mode:LocalTrain' %}
+              <span><img class="picto" src="{{ asset('images/train.svg') }}" alt="Train" title="Train"></span>
+              {% elseif departure.route.line.commercial_mode.id == 'commercial_mode:RapidTransit' %}
+              <span><img class="picto" src="{{ asset('images/train.svg') }}" alt="Train" title="Train"></span>
+              {% elseif departure.route.line.commercial_mode.id == 'commercial_mode:regionalRail' %}
+              <span><img class="picto" src="{{ asset('images/train.svg') }}" alt="Train" title="Train"></span>
+              {% else %}
+              <pre>
+                {{ dump(departure.route.line.commercial_mode.id) }}
+              </pre>
+              {% endif %}
+              <span class="with-bg-color" style="background-color: #{{ departure.route.line.color }}; color: #{{ departure.route.line.text_color }};">
+              {{ departure.route.line.code }}
+              </span>
+            </td>
             <td>{{ departure.route.direction.name }}</td>
+            <td>{{ maDate|date('H:i') }}</td>
           </tr>
           {% endfor %}
         </tbody>

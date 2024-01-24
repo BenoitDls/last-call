@@ -29,7 +29,7 @@ class LastCallController extends AbstractController
     {
         $response = $this->client->request(
             'GET',
-            'https://api.navitia.io/v1/coverage/fr-idf/stop_areas/'.$stop_area_id.'/departures?',
+            'https://api.navitia.io/v1/coverage/fr-idf/stop_areas/'.$stop_area_id.'/departures?count=100&',
             [
                 'headers' => [
                     'Authorization' => 'Basic MWI1YTUxNDItNjQzNS00MzI3LWFmNDMtNWM3MTBiMDVkOWMwOg==',
