@@ -22,7 +22,7 @@ class FavoriteController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_favorite_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_favorite_new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $favorite = new Favorite();

@@ -19,6 +19,10 @@ class Favorite
     #[ORM\Column(length: 255)]
     private ?string $stop_point = null;
 
+    #[ORM\ManyToOne(inversedBy: 'favorites')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?user $user_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +48,18 @@ class Favorite
     public function setStopPoint(string $stop_point): static
     {
         $this->stop_point = $stop_point;
+
+        return $this;
+    }
+
+    public function getUserId(): ?user
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?user $user_id): static
+    {
+        $this->user_id = $user_id;
 
         return $this;
     }
