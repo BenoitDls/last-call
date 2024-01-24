@@ -51,13 +51,13 @@
 
     console.log('result',apiResults)
     apiResults.forEach(result => {
-      const baseUrl = "{{ path('app_last_call_station', {stop_area_id: 'stop_area_id'})|escape('js') }}";
+      const baseUrl = "{{ path('app_last_call_station', {stop_area_id: 'stop_area_id', stop_area_name: 'stop_area_name'})|escape('js') }}";
       const resultButton = document.createElement('button');
       resultButton.type = 'button';
       resultButton.classList.add('list-group-item', 'list-group-item-action');
       resultButton.textContent = result.name;
       resultButton.addEventListener('click', () => {
-          window.location.href = baseUrl.replace('stop_area_id', result.id)
+          window.location.href = baseUrl.replace('stop_area_id', result.id).replace('stop_area_name', result.name)
       });
       results.appendChild(resultButton);
     });

@@ -24,8 +24,8 @@ class LastCallController extends AbstractController
         ]);
     }
 
-    #[Route('/last_call/station/{stop_area_id}', name: 'app_last_call_station')]
-    public function station(string $stop_area_id): Response
+    #[Route('/last_call/station/{stop_area_id}/{stop_area_name}', name: 'app_last_call_station')]
+    public function station(string $stop_area_id, string $stop_area_name): Response
     {
         $response = $this->client->request(
             'GET',
@@ -37,11 +37,11 @@ class LastCallController extends AbstractController
             ]
         );
 
-        dump($response->toArray());
-
         return $this->render('last_call/station.html.twig', [
             'controller_name' => 'LastCallController',
-            'stop_area_id' => $stop_area_id
+            'stop_area' => $response->toArray(),
+            'stop_area_id' => $stop_area_id,
+            'stop_area_name' => $stop_area_name
         ]);
     }
 }
