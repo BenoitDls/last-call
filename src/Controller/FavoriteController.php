@@ -26,7 +26,7 @@ class FavoriteController extends AbstractController
     public function index(FavoriteRepository $favoriteRepository): Response
     {
         return $this->render('favorite/index.html.twig', [
-            'favorites' => $favoriteRepository->findAll(),
+            'favorites' => $favoriteRepository->findBy(['user_id' => $this->user]),
         ]);
     }
 
@@ -46,31 +46,31 @@ class FavoriteController extends AbstractController
         return new JsonResponse(['message' => 'Favorite created successfully'], Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', name: 'app_favorite_show', methods: ['GET'])]
-    public function show(Favorite $favorite): Response
-    {
-        return $this->render('favorite/show.html.twig', [
-            'favorite' => $favorite,
-        ]);
-    }
+    // #[Route('/{id}', name: 'app_favorite_show', methods: ['GET'])]
+    // public function show(Favorite $favorite): Response
+    // {
+    //     return $this->render('favorite/show.html.twig', [
+    //         'favorite' => $favorite,
+    //     ]);
+    // }
 
-    #[Route('/{id}/edit', name: 'app_favorite_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Favorite $favorite, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(FavoriteType::class, $favorite);
-        $form->handleRequest($request);
+    // #[Route('/{id}/edit', name: 'app_favorite_edit', methods: ['GET', 'POST'])]
+    // public function edit(Request $request, Favorite $favorite, EntityManagerInterface $entityManager): Response
+    // {
+    //     $form = $this->createForm(FavoriteType::class, $favorite);
+    //     $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $entityManager->flush();
 
-            return $this->redirectToRoute('app_favorite_index', [], Response::HTTP_SEE_OTHER);
-        }
+    //         return $this->redirectToRoute('app_favorite_index', [], Response::HTTP_SEE_OTHER);
+    //     }
 
-        return $this->render('favorite/edit.html.twig', [
-            'favorite' => $favorite,
-            'form' => $form,
-        ]);
-    }
+    //     return $this->render('favorite/edit.html.twig', [
+    //         'favorite' => $favorite,
+    //         'form' => $form,
+    //     ]);
+    // }
 
     #[Route('/{id}', name: 'app_favorite_delete', methods: ['POST'])]
     public function delete(Request $request, Favorite $favorite, EntityManagerInterface $entityManager): Response
