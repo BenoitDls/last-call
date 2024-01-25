@@ -19,7 +19,7 @@
     height: 1.6em;
   }
 
-  .favorite-star {
+  #favorite-star {
     color:yellow;
     cursor:pointer;
   }
@@ -31,7 +31,7 @@
   <div class="card-body">
     <div class="d-flex align-items-center mb-2">
       <span class="fs-2 me-3">Dernier train pour {{ stop_area_name }}</span>
-      <i id="favorite-btn" class="bi bi-star{{ is_favorite ? '-fill' : '' }} fs-2 favorite-star"></i>
+      <i id="favorite-star" class="bi bi-star{{ is_favorite ? '-fill' : '' }} fs-2"></i>
     </div>
     <table class="table">
       <thead>
@@ -78,7 +78,7 @@
 </div>
 
 <script>
-  document.getElementById('favorite-btn').addEventListener('click', function() {
+  document.getElementById('favorite-star').addEventListener('click', function() {
     const baseUrl = '{{ path('app_favorite_new') }}';
     const stopAreaId = '{{ stop_area_id}}';
     const stopAreaName = '{{ stop_area_name }}';
@@ -95,10 +95,11 @@
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
-        if (data.message) {
-            alert(data.message);
-        }
+      let favoriteStar = document.getElementById('favorite-star');
+      if (favoriteStar) {
+        favoriteStar.classList.toggle('bi-star');
+        favoriteStar.classList.toggle('bi-star-fill');
+      }
     })
     .catch((error) => {
         console.error('Error:', error);
