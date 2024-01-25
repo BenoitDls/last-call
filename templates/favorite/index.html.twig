@@ -3,35 +3,41 @@
 {% block title %}Favorite index{% endblock %}
 
 {% block body %}
-    <h1>Favorite index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Stop_point</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+<div class="card my-5">
+    <div class="card-body">
+        <h2 class="card-title mb-3">Favoris</h2>
         {% for favorite in favorites %}
-            <tr>
-                <td>{{ favorite.id }}</td>
-                <td>{{ favorite.name }}</td>
-                <td>{{ favorite.stopPoint }}</td>
-                <td>
-                    <a href="{{ path('app_favorite_show', {'id': favorite.id}) }}">show</a>
-                    <a href="{{ path('app_favorite_edit', {'id': favorite.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
+        <span 
+        class="badge align-items-center text-light-emphasis bg-light-subtle border border-dark-subtle rounded-pill fs-5 d-inline-flex mt-2" 
+        data-stop-area-name="{{ favorite.name }}" 
+        data-stop-area-id="{{ favorite.stopPoint }}"
+        >
+            {{ favorite.name }}
+            <span class="vr mx-2"></span>
+            <a href="{{ path('app_favorite_delete', {'id': favorite.id}) }}">
+                <i class="bi bi-x-circle-fill" width="1em" height="1em"></i>
+            </a>
+        </span>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
+</div>
 
-    <a href="{{ path('app_favorite_new') }}">Create new</a>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let favoriteElements = document.querySelectorAll('.badge');
+
+    favoriteElements.forEach(function(element) {
+        element.addEventListener('click', function(event) {
+            let stopAreaId = event.target.getAttribute('data-stop-area-id');
+            let stopAreaName = event.target.getAttribute('data-stop-area-name');
+
+            const baseUrl = "{{ path('app_last_call_station', {stop_area_id: 'stop_area_id', stop_area_name: 'stop_area_name'})|escape('js') }}";
+            let redirectUrl = baseUrl.replace('stop_area_id', stopAreaId).replace('stop_area_name', stopAreaName);
+
+            window.location.href = redirectUrl;
+        });
+    });
+});
+</script>
+    
 {% endblock %}

@@ -10,10 +10,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/favorite')]
 class FavoriteController extends AbstractController
 {
+    private $user;
+
+    public function __construct(TokenStorageInterface $tokenStorage) {
+        $this->user = $tokenStorage->getToken()->getUser();
+    }
+
     #[Route('/', name: 'app_favorite_index', methods: ['GET'])]
     public function index(FavoriteRepository $favoriteRepository): Response
     {
@@ -25,21 +33,17 @@ class FavoriteController extends AbstractController
     #[Route('/new', name: 'app_favorite_new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $data = json_decode($request->getContent(), true);
+
         $favorite = new Favorite();
-        $form = $this->createForm(FavoriteType::class, $favorite);
-        $form->handleRequest($request);
+        $favorite->setName($data['stop_area_name']);
+        $favorite->setStopPoint($data['stop_area_id']);
+        $favorite->setUserId($this->user);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($favorite);
-            $entityManager->flush();
+        $entityManager->persist($favorite);
+        $entityManager->flush();
 
-            return $this->redirectToRoute('app_favorite_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('favorite/new.html.twig', [
-            'favorite' => $favorite,
-            'form' => $form,
-        ]);
+        return new JsonResponse(['message' => 'Favorite created successfully'], Response::HTTP_CREATED);
     }
 
     #[Route('/{id}', name: 'app_favorite_show', methods: ['GET'])]

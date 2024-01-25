@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Favorite;
 
 class LastCallController extends AbstractController
 {
@@ -25,11 +27,11 @@ class LastCallController extends AbstractController
     }
 
     #[Route('/last_call/station/{stop_area_id}/{stop_area_name}', name: 'app_last_call_station')]
-    public function station(string $stop_area_id, string $stop_area_name): Response
+    public function station(string $stop_area_id, string $stop_area_name, EntityManagerInterface $em): Response
     {
         $response = $this->client->request(
             'GET',
-            'https://api.navitia.io/v1/coverage/fr-idf/stop_areas/'.$stop_area_id.'/departures?count=100&',
+            'https://api.navitia.io/v1/coverage/fr-idf/stop_areas/'.$stop_area_id.'/departures?count=50&',
             [
                 'headers' => [
                     'Authorization' => 'Basic MWI1YTUxNDItNjQzNS00MzI3LWFmNDMtNWM3MTBiMDVkOWMwOg==',
@@ -37,11 +39,14 @@ class LastCallController extends AbstractController
             ]
         );
 
+        $isFavorite = $em->getRepository(Favorite::class)->findOneBy(['stopPoint' => $stop_area_id]) ? true : false;
+
         return $this->render('last_call/station.html.twig', [
             'controller_name' => 'LastCallController',
             'stop_area' => $response->toArray(),
             'stop_area_id' => $stop_area_id,
-            'stop_area_name' => $stop_area_name
+            'stop_area_name' => $stop_area_name,
+            'is_favorite' => $isFavorite
         ]);
     }
 }

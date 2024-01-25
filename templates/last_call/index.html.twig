@@ -3,69 +3,69 @@
 {% block title %}Last train!{% endblock %}
 
 {% block body %}
-		<div class="card my-5">
-			<div class="card-body">
-          <h2 class="card-title mb-3">Dernier train!</h2>
-          <div class="input-group input-group-lg ">
-				    <input type="text" id="autocompleteInput" class="form-control shadow-sm" placeholder="Gare, arrêt, station">
-          </div>
+<div class="card my-5">
+  <div class="card-body">
+      <h2 class="card-title mb-3">Dernier train!</h2>
+      <div class="input-group input-group-lg ">
+        <input type="text" id="autocompleteInput" class="form-control shadow-sm" placeholder="Gare, arrêt, station">
+      </div>
 
-          <div id="autocompleteResults" class="list-group mt-3"></div>
-			</div>
-		</div>
+      <div id="autocompleteResults" class="list-group mt-3"></div>
+  </div>
+</div>
 
-	<script>
-  const token = '66b866e5-f237-4809-a433-f34d595d949e';
+<script>
+const token = '66b866e5-f237-4809-a433-f34d595d949e';
 
-  function fetchAutocompleteResults(inputValue) {
+function fetchAutocompleteResults(inputValue) {
 
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Basic MWI1YTUxNDItNjQzNS00MzI3LWFmNDMtNWM3MTBiMDVkOWMwOg==");
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", "Basic MWI1YTUxNDItNjQzNS00MzI3LWFmNDMtNWM3MTBiMDVkOWMwOg==");
 
-    var requestOptions = {
-      method: 'GET',
-      headers: myHeaders
-    };
-    
-    const apiUrl = `https://api.navitia.io/v1/coverage/fr-idf/places?type%5B%5D=stop_area&q=${inputValue}`;
-    
-    return fetch(apiUrl, requestOptions)
-      .then(response => response.json())
-      .then(result => {
-        return result.places;
-      })
-      .catch(error => {
-        console.error('Erreur lors de la récupération des données depuis l\'API:', error);
-        return [];
-      });
-  }
-
-  async function autocomplete(input) {    
-    const inputValue = input.value.toLowerCase();
-    const results = document.getElementById('autocompleteResults');
-    results.innerHTML = '';
-
-    if (!inputValue) return;
-
-    const apiResults = await fetchAutocompleteResults(inputValue);
-
-    console.log('result',apiResults)
-    apiResults.forEach(result => {
-      const baseUrl = "{{ path('app_last_call_station', {stop_area_id: 'stop_area_id', stop_area_name: 'stop_area_name'})|escape('js') }}";
-      const resultButton = document.createElement('button');
-      resultButton.type = 'button';
-      resultButton.classList.add('list-group-item', 'list-group-item-action');
-      resultButton.textContent = result.name;
-      resultButton.addEventListener('click', () => {
-          window.location.href = baseUrl.replace('stop_area_id', result.id).replace('stop_area_name', result.name)
-      });
-      results.appendChild(resultButton);
+  var requestOptions = {
+    method: 'GET',
+    headers: myHeaders
+  };
+  
+  const apiUrl = `https://api.navitia.io/v1/coverage/fr-idf/places?type%5B%5D=stop_area&q=${inputValue}`;
+  
+  return fetch(apiUrl, requestOptions)
+    .then(response => response.json())
+    .then(result => {
+      return result.places;
+    })
+    .catch(error => {
+      console.error('Erreur lors de la récupération des données depuis l\'API:', error);
+      return [];
     });
-  }
+}
 
-  const input = document.getElementById('autocompleteInput');
-  input.addEventListener('input', () => autocomplete(input));
+async function autocomplete(input) {    
+  const inputValue = input.value.toLowerCase();
+  const results = document.getElementById('autocompleteResults');
+  results.innerHTML = '';
 
-	</script>
+  if (!inputValue) return;
+
+  const apiResults = await fetchAutocompleteResults(inputValue);
+
+  console.log('result',apiResults)
+  apiResults.forEach(result => {
+    const baseUrl = "{{ path('app_last_call_station', {stop_area_id: 'stop_area_id', stop_area_name: 'stop_area_name'})|escape('js') }}";
+    const resultButton = document.createElement('button');
+    resultButton.type = 'button';
+    resultButton.classList.add('list-group-item', 'list-group-item-action');
+    resultButton.textContent = result.name;
+    resultButton.addEventListener('click', () => {
+        window.location.href = baseUrl.replace('stop_area_id', result.id).replace('stop_area_name', result.name)
+    });
+    results.appendChild(resultButton);
+  });
+}
+
+const input = document.getElementById('autocompleteInput');
+input.addEventListener('input', () => autocomplete(input));
+
+</script>
 {% endblock %}
 
