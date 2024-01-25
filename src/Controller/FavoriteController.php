@@ -25,6 +25,7 @@ class FavoriteController extends AbstractController
     #[Route('/', name: 'app_favorite_index', methods: ['GET'])]
     public function index(FavoriteRepository $favoriteRepository): Response
     {
+        dump('out');
         return $this->render('favorite/index.html.twig', [
             'favorites' => $favoriteRepository->findBy(['user_id' => $this->user]),
         ]);
@@ -75,11 +76,11 @@ class FavoriteController extends AbstractController
     #[Route('/{id}', name: 'app_favorite_delete', methods: ['POST'])]
     public function delete(Request $request, Favorite $favorite, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$favorite->getId(), $request->request->get('_token'))) {
+        // if ($this->isCsrfTokenValid('delete'.$favorite->getId(), $request->request->get('_token'))) {
             $entityManager->remove($favorite);
             $entityManager->flush();
-        }
+        // }
 
-        return $this->redirectToRoute('app_favorite_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse(['message' => 'Favorite deleted successfully']);
     }
 }

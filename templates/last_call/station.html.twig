@@ -31,7 +31,9 @@
   <div class="card-body">
     <div class="d-flex align-items-center mb-2">
       <span class="fs-2 me-3">Dernier train pour {{ stop_area_name }}</span>
+      {% if app.user %}
       <i id="favorite-star" class="bi bi-star{{ is_favorite ? '-fill' : '' }} fs-2"></i>
+      {% endif %}
     </div>
     <table class="table">
       <thead>

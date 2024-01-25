@@ -11,10 +11,11 @@
         class="badge align-items-center text-light-emphasis bg-light-subtle border border-dark-subtle rounded-pill fs-5 d-inline-flex mt-2" 
         data-stop-area-name="{{ favorite.name }}" 
         data-stop-area-id="{{ favorite.stopPoint }}"
+        data-favorite-id="{{ favorite.id }}"
         >
             {{ favorite.name }}
             <span class="vr mx-2"></span>
-            <a href="{{ path('app_favorite_delete', {'id': favorite.id}) }}">
+            <a class="delete-favorite-button">
                 <i class="bi bi-x-circle-fill" width="1em" height="1em"></i>
             </a>
         </span>
@@ -25,6 +26,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let favoriteElements = document.querySelectorAll('.badge');
+    let deleteButtons = document.querySelectorAll('.delete-favorite-button');
 
     favoriteElements.forEach(function(element) {
         element.addEventListener('click', function(event) {
@@ -35,6 +37,28 @@ document.addEventListener('DOMContentLoaded', function() {
             let redirectUrl = baseUrl.replace('stop_area_id', stopAreaId).replace('stop_area_name', stopAreaName);
 
             window.location.href = redirectUrl;
+        });
+    });
+
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation();
+            let favoriteId = event.target.closest('.badge').getAttribute('data-favorite-id');
+            let badgeElement = event.target.closest('.badge');
+            const deleteUrl = "{{ path('app_favorite_delete', {'id': 'id'})|escape('js') }}".replace('id', favoriteId);
+            console.error(deleteUrl);
+            fetch(deleteUrl, {
+                method: 'POST',
+            }).then(function(response) {
+                if (response.ok) {
+                    console.log('Favorite deleted successfully');
+                    badgeElement.remove();
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            }).catch(function(error) {
+                console.error('Fetch Error:', error);
+            });
         });
     });
 });
